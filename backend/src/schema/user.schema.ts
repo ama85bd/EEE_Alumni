@@ -11,6 +11,9 @@ export const createUserSchema = object({
     academicSession: string({
       required_error: 'Academic session is required',
     }),
+    image: string({
+      required_error: 'Image is required',
+    }),
     profession: string({
       required_error: 'Profession is required',
     }),
@@ -41,13 +44,13 @@ export const createUserSchema = object({
     password: string({
       required_error: 'Password is required',
     }).min(6, 'Password too short - should be 6 chars minimum'),
-    passwordConfirmation: string({
+    confirmPassword: string({
       required_error: 'Password Confirmation is required',
     }),
     email: string({
       required_error: 'Email is required',
     }).email('Not a valid email'),
-  }).refine((data) => data.password === data.passwordConfirmation, {
+  }).refine((data) => data.password === data.confirmPassword, {
     message: 'Password do not match',
     path: ['passwordConfirmation'],
   }),

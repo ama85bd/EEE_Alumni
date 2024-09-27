@@ -8,10 +8,22 @@ export async function createUserHandler(
 ) {
   try {
     const user = await createUser(req.body);
-    return res.send(user);
+    return res.status(200).json('Ok');
   } catch (error: any) {
     logger.error(error);
-    return res.status(409).send(error.message);
+    // Check for duplicate key error using error.message
+    if (error.message && error.message.includes('duplicate key error')) {
+      return res.status(400).send({ message: 'Email already exists.' });
+    }
+
+    // Handle Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).send({ message: error.message });
+    }
+
+    // General error handling
+    console.error(error); // Log the entire error for debugging
+    res.status(500).send({ message: 'Server error.' });
   }
 }
 

@@ -1,9 +1,12 @@
 'use client';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import TailwindStyles from '@/utils/TailwindCss';
+import { IUser } from '@/models/user';
+import toast from 'react-hot-toast';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -21,16 +24,16 @@ const validationSchema = Yup.object().shape({
     .required('Session is required'),
   email: Yup.string().email('Email is not valid').required('Email is required'),
   officeAddress: Yup.string()
-    .min(10, 'Address must be at least 10 characters long')
-    .max(200, 'Address must be less than 200 characters')
+    .min(10, 'Office address must be at least 10 characters long')
+    .max(200, 'Office address must be less than 200 characters')
     .required('Office address is required'),
   presentAddress: Yup.string()
-    .min(10, 'Address must be at least 10 characters long')
-    .max(200, 'Address must be less than 200 characters')
+    .min(10, 'Present address must be at least 10 characters long')
+    .max(200, 'Present address must be less than 200 characters')
     .required('Present address is required'),
   permanentAddress: Yup.string()
-    .min(10, 'Address must be at least 10 characters long')
-    .max(200, 'Address must be less than 200 characters')
+    .min(10, 'Permanent address must be at least 10 characters long')
+    .max(200, 'Permanent address must be less than 200 characters')
     .required('Permanent Address is required'),
   password: Yup.string()
     .min(8, 'Password must be at least 8 characters')
@@ -46,17 +49,16 @@ const validationSchema = Yup.object().shape({
     .oneOf([Yup.ref('password'), ''], 'Passwords must match')
     .required('Confirm Password is required'),
   image: Yup.mixed()
-    .test('fileSize', 'File size is too large (max 1MB)', (value) => {
-      return value && value[0] && value[0].size <= 1024 * 1024; // 1MB
+    .required('An image is required')
+    .test('fileSize', 'File size is too large (max: 1MB)', (value: any) => {
+      return value && value[0]?.size <= 1048576; // 1 MB in bytes
     })
-    .test('fileType', 'Only images are allowed (jpeg, png, gif)', (value) => {
+    .test('fileType', 'Unsupported File Format', (value: any) => {
       return (
         value &&
-        value[0] &&
-        ['image/jpeg', 'image/png', 'image/gif'].includes(value[0].type)
+        ['image/jpeg', 'image/png', 'image/gif'].includes(value[0]?.type)
       );
-    })
-    .required('Image is required'),
+    }),
 });
 
 const Page = () => {
@@ -66,27 +68,85 @@ const Page = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
+    mode: 'onChange',
     resolver: yupResolver(validationSchema),
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [base64, setBase64] = useState('');
+  const [image, setImage] = useState<any>(null);
 
-  const handleFormSubmit = async (data: unknown) => {
-    console.log('data', data);
+  const maxFileSizeInMB = 1;
+  const maxFileSizeInKB = 1024 * 1024 * maxFileSizeInMB;
+
+  const handleImageChange = (e: any) => {
+    const file = e.target.files[0];
+    if (file.size > maxFileSizeInKB) {
+      return;
+    }
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        const base64String = e.target.result;
+        setBase64(base64String);
+      };
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
+
+      reader.readAsDataURL(file);
+    }
   };
 
+  const handleFormSubmit = async (data: IUser) => {
+    const final: IUser = {
+      ...data,
+      image: base64,
+      isActive: false,
+      isAdmin: false,
+      isMember: false,
+      isLifeMember: false,
+    };
+
+    try {
+      const response = await fetch('http://localhost:1337/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...final,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success(`User added successfully..`);
+      }
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message); // Throw an error with the server response
+      }
+
+      const user = await response.json();
+      // Handle successful user creation (e.g., redirect, show success message)
+    } catch (error: any) {
+      toast.error(`${error.message}`);
+    }
+  };
   return (
-    <div className='flex justify-center items-center bg-gray-200  '>
+    <div className='flex justify-center items-center bg-gray-200 dark:bg-gray-100 '>
       <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
         <div className='mb-2 min-w-96'>
           <div>
-            <label className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'>
+            <label className={TailwindStyles.label}>
               Name:<span className='text-red-500'>*</span>
             </label>
             <input
               type='text'
-              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+              className={TailwindStyles.input}
               {...register('name')}
             />
             {errors.name && (
@@ -95,12 +155,12 @@ const Page = () => {
           </div>
 
           <div>
-            <label className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'>
+            <label className={TailwindStyles.label}>
               Email:<span className='text-red-500'>*</span>
             </label>
             <input
               type='email'
-              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+              className={TailwindStyles.input}
               {...register('email')}
             />
             {errors.email && (
@@ -109,12 +169,12 @@ const Page = () => {
           </div>
 
           <div>
-            <label className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'>
+            <label className={TailwindStyles.label}>
               Mobile No:<span className='text-red-500'>*</span>
             </label>
             <input
               type='text'
-              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+              className={TailwindStyles.input}
               {...register('mobileNo')}
             />
             {errors.mobileNo && (
@@ -123,12 +183,12 @@ const Page = () => {
           </div>
 
           <div>
-            <label className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'>
+            <label className={TailwindStyles.label}>
               Session:<span className='text-red-500'>*</span>
             </label>
             <input
               type='text'
-              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+              className={TailwindStyles.input}
               {...register('academicSession')}
             />
             {errors.academicSession && (
@@ -137,12 +197,12 @@ const Page = () => {
           </div>
 
           <div>
-            <label className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'>
+            <label className={TailwindStyles.label}>
               Profession:<span className='text-red-500'>*</span>
             </label>
             <input
               type='text'
-              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+              className={TailwindStyles.input}
               {...register('profession')}
             />
             {errors.profession && (
@@ -151,12 +211,12 @@ const Page = () => {
           </div>
 
           <div>
-            <label className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'>
+            <label className={TailwindStyles.label}>
               Designation:<span className='text-red-500'>*</span>
             </label>
             <input
               type='text'
-              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+              className={TailwindStyles.input}
               {...register('designation')}
             />
             {errors.designation && (
@@ -165,10 +225,7 @@ const Page = () => {
           </div>
 
           <div>
-            <label
-              htmlFor='presentAddress'
-              className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'
-            >
+            <label htmlFor='presentAddress' className={TailwindStyles.label}>
               Office Address:<span className='text-red-500'>*</span>
             </label>
             <Controller
@@ -177,7 +234,7 @@ const Page = () => {
               defaultValue=''
               render={({ field }) => (
                 <textarea
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  className={TailwindStyles.input}
                   {...field}
                   placeholder='Enter your office address'
                   rows={4}
@@ -191,10 +248,7 @@ const Page = () => {
           </div>
 
           <div>
-            <label
-              htmlFor='presentAddress'
-              className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'
-            >
+            <label htmlFor='presentAddress' className={TailwindStyles.label}>
               Present Address:<span className='text-red-500'>*</span>
             </label>
             <Controller
@@ -203,7 +257,7 @@ const Page = () => {
               defaultValue=''
               render={({ field }) => (
                 <textarea
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  className={TailwindStyles.input}
                   {...field}
                   placeholder='Enter your present address'
                   rows={4}
@@ -217,10 +271,7 @@ const Page = () => {
           </div>
 
           <div>
-            <label
-              htmlFor='presentAddress'
-              className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'
-            >
+            <label htmlFor='presentAddress' className={TailwindStyles.label}>
               Permanent Address:<span className='text-red-500'>*</span>
             </label>
             <Controller
@@ -229,7 +280,7 @@ const Page = () => {
               defaultValue=''
               render={({ field }) => (
                 <textarea
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  className={TailwindStyles.input}
                   {...field}
                   placeholder='Enter your permanent address'
                   rows={4}
@@ -243,14 +294,14 @@ const Page = () => {
           </div>
 
           <div>
-            <label className='block mt-3 mb-1 text-sm font-medium text-gray-900 dark:text-white'>
+            <label className={TailwindStyles.label}>
               Password:<span className='text-red-500'>*</span>
             </label>
             <div style={{ position: 'relative' }}>
               <input
                 type={showPassword ? 'text' : 'password'}
                 {...register('password')}
-                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                className={TailwindStyles.input}
               />
               <button
                 type='button'
@@ -262,7 +313,11 @@ const Page = () => {
                   transform: 'translateY(-50%)',
                 }}
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                {showPassword ? (
+                  <FaEyeSlash className='dark:text-white' />
+                ) : (
+                  <FaEye className='dark:text-white' />
+                )}
               </button>
             </div>
             {errors.password && (
@@ -271,14 +326,14 @@ const Page = () => {
           </div>
 
           <div>
-            <label className='block mt-3 mb-1text-sm font-medium text-gray-900 dark:text-white'>
+            <label className={TailwindStyles.label}>
               Confirm Password:<span className='text-red-500'>*</span>
             </label>
             <div style={{ position: 'relative' }}>
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 {...register('confirmPassword')}
-                className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                className={TailwindStyles.input}
               />
               <button
                 type='button'
@@ -290,7 +345,11 @@ const Page = () => {
                   transform: 'translateY(-50%)',
                 }}
               >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                {showConfirmPassword ? (
+                  <FaEyeSlash className='dark:text-white' />
+                ) : (
+                  <FaEye className='dark:text-white' />
+                )}
               </button>
             </div>
             {errors.confirmPassword && (
@@ -298,11 +357,16 @@ const Page = () => {
             )}
           </div>
 
+          {image && (
+            <img
+              src={image}
+              alt='Preview'
+              className='mt-4 border rounded shadow max-h-[150px] max-w-[150px] object-cover'
+            />
+          )}
+
           <div>
-            <label
-              htmlFor='image'
-              className='block text-sm font-medium text-gray-700'
-            >
+            <label htmlFor='image' className={TailwindStyles.label}>
               Upload Image <span className='text-red-500'>*</span>
             </label>
             <Controller
@@ -315,6 +379,7 @@ const Page = () => {
                   accept='image/jpeg, image/png, image/gif'
                   onChange={(event) => {
                     onChange(event.target.files);
+                    handleImageChange(event);
                   }}
                   onBlur={onBlur}
                   ref={ref}

@@ -13,6 +13,7 @@ export interface UserDocument extends mongoose.Document {
   presentAddress: string;
   permanentAddress: string;
   password: string;
+  image: string;
   isAdmin: boolean;
   isActive: boolean;
   isMember: boolean;
@@ -34,6 +35,7 @@ const userSchema = new mongoose.Schema(
     presentAddress: { type: String, require: true },
     permanentAddress: { type: String, require: true },
     password: { type: String, require: true },
+    image: { type: String, require: true },
     isAdmin: { type: Boolean, require: true },
     isActive: { type: Boolean, require: true },
     isMember: { type: Boolean, require: true },
