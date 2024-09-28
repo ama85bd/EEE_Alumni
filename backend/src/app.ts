@@ -6,6 +6,7 @@ import cors from 'cors';
 import logger from './utils/logger';
 import connect from './utils/connect';
 import userRoutes from './routes/user';
+import sessionRoutes from './routes/session';
 
 const port = config.get<number>('port');
 const app = express();
@@ -30,4 +31,7 @@ app.listen(port, async () => {
   await connect();
   // user route
   userRoutes(app);
+
+  // session route
+  sessionRoutes(app);
 });

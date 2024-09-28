@@ -10,9 +10,16 @@ import config from 'config';
 
 export async function createUserSessionHandler(req: Request, res: Response) {
   // Validate the user's password
-  const user = await validatePassword(req.body);
+  const user: any = await validatePassword(req.body);
+  console.log('user', user);
+  console.log('user.name', user.name);
+
   if (!user) {
-    return res.status(401).send('Invalid email or password');
+    return res.status(401).send({ message: 'Invalid email or password' });
+  }
+
+  if (!user.isActive) {
+    return res.status(400).send({ message: 'You are not allowed to login.' });
   }
 
   // create a session
@@ -21,7 +28,7 @@ export async function createUserSessionHandler(req: Request, res: Response) {
   // create an access token
   const accessToken = sighJwt(
     {
-      ...user,
+      id: user._id,
       session: session._id,
     },
     'accessTokenPrivateKey',
@@ -30,7 +37,7 @@ export async function createUserSessionHandler(req: Request, res: Response) {
   // create a refresh token
   const refreshToken = sighJwt(
     {
-      ...user,
+      id: user._id,
       session: session._id,
     },
     'refreshTokenPrivateKey',
@@ -38,7 +45,18 @@ export async function createUserSessionHandler(req: Request, res: Response) {
   );
 
   // return access and refresh tokens
-  return res.send({ accessToken, refreshToken });
+  return res.send({
+    accessToken,
+    refreshToken,
+    name: user.name,
+    userId: user._id,
+    email: user.email,
+    userType: [
+      { admin: user.isAdmin },
+      { member: user.isMember },
+      { lifeMember: user.isLifeMember },
+    ],
+  });
 }
 
 export async function getUserSessionHandler(req: Request, res: Response) {

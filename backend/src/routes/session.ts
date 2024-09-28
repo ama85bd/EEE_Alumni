@@ -11,7 +11,7 @@ function sessionRoutes(app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => res.sendStatus(200));
 
   app.post(
-    '/api/sessions',
+    '/api/login',
     validate(createSessionSchema),
     createUserSessionHandler
   );
