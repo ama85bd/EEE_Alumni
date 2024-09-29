@@ -9,9 +9,7 @@ export default withAuth(
   async function middleware(req: any) {
     const pathname = req.nextUrl.pathname;
     console.log('pathname', pathname);
-    console.log('req', req.nextauth.token?.userType[0]?.admin === true);
     const isAuth = await getToken({ req });
-    console.log('isAuth', isAuth);
     const isLoginPage = pathname.startsWith('/login');
 
     // const sensitiveRoutes = ['/adminDashboard'];
@@ -38,16 +36,19 @@ export default withAuth(
     // if (pathname === '/') {
     //   return NextResponse.redirect(new URL('/adminDashboard', req.url));
     // }
-
+    console.log(
+      'pathname === req.nextUrl.pathname.startsWith',
+      pathname.startsWith('/admin')
+    );
     if (isLoginPage) {
       if (isAuth && !req.nextauth.token?.userType[0]?.admin) {
-        return NextResponse.redirect(new URL('/adminDashboard', req.url));
+        return NextResponse.redirect(new URL('/admin', req.url));
       }
 
       return NextResponse.next();
     }
     if (
-      pathname === '/adminDashboard' &&
+      pathname.startsWith('/admin') &&
       !req.nextauth.token?.userType[0]?.admin
     ) {
       // return new NextResponse('You are not authorized');
@@ -78,5 +79,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ['/adminDashboard/:path*'],
+  matcher: ['/admin/:path*'],
 };

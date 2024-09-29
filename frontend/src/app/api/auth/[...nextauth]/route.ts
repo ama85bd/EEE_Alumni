@@ -19,7 +19,6 @@ export const authOptions: NextAuthOptions = {
           }),
         });
         const data = await res.json();
-        console.log('data auth', data);
         if (res.ok && data.accessToken) {
           return Promise.resolve({
             ...data,
@@ -38,7 +37,6 @@ export const authOptions: NextAuthOptions = {
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
       session.userType = token.userType;
-      console.log('session', session);
       return session;
     },
     async jwt({ token, user }: any) {
@@ -54,7 +52,6 @@ export const authOptions: NextAuthOptions = {
       if (Date.now() < token.expiresIn) {
         return token;
       }
-      console.log('token', token);
       return token;
     },
   },

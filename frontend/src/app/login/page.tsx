@@ -8,6 +8,7 @@ import * as Yup from 'yup';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface pageProps {}
 
@@ -54,13 +55,21 @@ const Login: FC<pageProps> = ({}) => {
   };
 
   return (
-    <div className='flex items-center justify-center bg-gray-100'>
+    <div className='flex items-center justify-center '>
       <div className='h-1/3 w-full max-w-sm'>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className='bg-white p-8 rounded shadow-md'
-        >
-          <h2 className='text-2xl font-bold text-center mb-6'>Login</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className=' p-8 rounded'>
+          <div className='flex items-center justify-center mb-5'>
+            <Image
+              src='/logo.png' // Path to your logo
+              alt='Company Logo' // Alt text for accessibility
+              width={80} // Set width
+              height={20} // Set height
+              priority // Optional: prioritize loading this image
+            />
+          </div>
+          <h2 className='text-emerald-800 text-2xl font-bold text-center mb-6'>
+            Login
+          </h2>
           <div className='mb-4'>
             <label className='block text-gray-700 mb-2' htmlFor='email'>
               Email

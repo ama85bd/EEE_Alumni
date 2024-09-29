@@ -136,8 +136,9 @@ const Page = () => {
       toast.error(`${error.message}`);
     }
   };
+
   return (
-    <div className='flex justify-center items-center bg-gray-200 dark:bg-gray-100 '>
+    <div className='flex justify-center items-center  dark:bg-gray-100 '>
       <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
         <div className='mb-2 min-w-96'>
           <div>
