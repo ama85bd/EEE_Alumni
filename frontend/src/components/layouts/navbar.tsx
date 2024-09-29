@@ -1,6 +1,9 @@
 'use client';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
+import styles from '../css/Dropdown.module.css';
+import { useState } from 'react';
+import { IoIosArrowForward } from 'react-icons/io';
 
 const Navbar = () => {
   const { data: session, status }: any = useSession();
@@ -10,6 +13,13 @@ const Navbar = () => {
     'session session?.userType[0].isAdmin ',
     session?.userType[0].admin
   );
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [nestedOpen, setNestedOpen] = useState(false);
+
+  const toggleDropdown = () => setIsOpen((prev) => !prev);
+  const toggleNestedDropdown = () => setNestedOpen((prev) => !prev);
+
   return (
     <>
       <nav className='bg-gray-50 dark:bg-gray-700'>
@@ -34,21 +44,15 @@ const Navbar = () => {
                   Notice
                 </Link>
               </li>
-              {session?.userType[0].admin && (
-                <li>
-                  <Link
-                    href='/adminDashboard'
-                    className='text-gray-900 dark:text-white hover:underline'
-                    aria-current='page'
+              <li>
+                <div
+                  className={styles.dropdown}
+                  onMouseLeave={() => setIsOpen(false)}
+                >
+                  <button
+                    onMouseEnter={toggleDropdown}
+                    className={styles.dropdownButton}
                   >
-                    Admin Dashboard
-                  </Link>
-                </li>
-              )}
-              <li className='relative '>
-                <div className='relative group'>
-                  {/* Parent Dropdown Button */}
-                  <button className='flex items-center justify-between w-full rounded-md bg-gray-800 text-white px-4 py-2 focus:outline-none'>
                     Menu
                     <svg
                       className='ml-2 h-5 w-5'
@@ -64,83 +68,44 @@ const Navbar = () => {
                       />
                     </svg>
                   </button>
-
-                  {/* Parent Dropdown Menu */}
-                  <div className='absolute left-0 z-10 hidden mt-0 w-48 bg-white rounded-md shadow-lg group-hover:block'>
-                    <div
-                      className='py-1'
-                      role='menu'
-                      aria-orientation='vertical'
-                      aria-labelledby='options-menu'
-                    >
-                      <div className='relative group'>
-                        {/* First Option with Nested Dropdown */}
-                        <div className='relative group'>
-                          <a
-                            href='#'
-                            className='flex justify-between items-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                            role='menuitem'
-                          >
-                            Option 1
-                            <svg
-                              className='h-4 w-4 ml-2'
-                              xmlns='http://www.w3.org/2000/svg'
-                              viewBox='0 0 20 20'
-                              fill='currentColor'
-                              aria-hidden='true'
-                            >
-                              <path
-                                fillRule='evenodd'
-                                d='M10.293 15.293a1 1 0 001.414 0l4-4a1 1 0 000-1.414l-4-4a1 1 0 00-1.414 1.414L13.586 10H3a1 1 0 100 2h10.586l-3.293 3.293a1 1 0 000 1.414z'
-                                clipRule='evenodd'
-                              />
-                            </svg>
-                          </a>
-
-                          {/* Nested Dropdown */}
-                          <div className='absolute left-full top-0 hidden w-48 mt-1 bg-white rounded-md shadow-lg group-hover:block'>
-                            <div
-                              className='py-1'
-                              role='menu'
-                              aria-orientation='vertical'
-                            >
-                              <a
-                                href='#'
-                                className='flex justify-between items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                                role='menuitem'
-                              >
-                                Nested Option 1
-                              </a>
-                              <a
-                                href='#'
-                                className='flex justify-between items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                                role='menuitem'
-                              >
-                                Nested Option 2
-                              </a>
+                  {isOpen && (
+                    <div className={styles.dropdownContent}>
+                      <div
+                        className={styles.dropdownItem}
+                        onMouseEnter={toggleNestedDropdown}
+                        onMouseLeave={() => setNestedOpen(false)}
+                      >
+                        <div style={{ display: 'flex' }}>
+                          Parent Item{' '}
+                          <IoIosArrowForward className='mt-1 ml-3' />
+                        </div>
+                        {nestedOpen && (
+                          <div className={styles.nestedDropdown}>
+                            <div className={styles.nestedItem}>
+                              Nested Item 1
+                            </div>
+                            <div className={styles.nestedItem}>
+                              Nested Item 2
                             </div>
                           </div>
-                        </div>
-
-                        <a
-                          href='#'
-                          className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                          role='menuitem'
-                        >
-                          Option 2
-                        </a>
-                        <a
-                          href='#'
-                          className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                          role='menuitem'
-                        >
-                          Option 3
-                        </a>
+                        )}
                       </div>
+                      <div className={styles.dropdownItem}>Another Item</div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </li>
+              {session?.userType[0].admin && (
+                <li>
+                  <Link
+                    href='/adminDashboard'
+                    className='text-gray-900 dark:text-white hover:underline'
+                    aria-current='page'
+                  >
+                    Admin Dashboard
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
           <div className='flex items-center'>
