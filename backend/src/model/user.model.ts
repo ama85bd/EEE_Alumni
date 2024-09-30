@@ -12,6 +12,7 @@ export interface UserDocument extends mongoose.Document {
   officeAddress: string;
   presentAddress: string;
   permanentAddress: string;
+  expertiseFields: string;
   password: string;
   image: string;
   isAdmin: boolean;
@@ -34,6 +35,7 @@ const userSchema = new mongoose.Schema(
     officeAddress: { type: String, require: true },
     presentAddress: { type: String, require: true },
     permanentAddress: { type: String, require: true },
+    expertiseFields: { type: String, require: true },
     password: { type: String, require: true },
     image: { type: String, require: true },
     isAdmin: { type: Boolean, require: true },

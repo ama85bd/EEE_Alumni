@@ -1,6 +1,11 @@
 import { Response, Request } from 'express';
 import logger from '../utils/logger';
-import { createUser, findUser, findUserById } from '../service/user.service';
+import {
+  createUser,
+  findInActiveUsers,
+  findUser,
+  findUserById,
+} from '../service/user.service';
 import { CreateUserInput, GetUserInput } from '../schema/user.schema';
 export async function createUserHandler(
   req: Request<{}, {}, CreateUserInput['body']>,
@@ -39,4 +44,9 @@ export async function getUserHandler(
   }
 
   return res.send(user);
+}
+
+export async function getInActiveUsersHandler(req: Request, res: Response) {
+  const inActiveUsers = await findInActiveUsers({ isActive: false });
+  return res.send(inActiveUsers);
 }

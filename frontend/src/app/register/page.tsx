@@ -12,6 +12,7 @@ const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   profession: Yup.string().required('Profession is required'),
   designation: Yup.string().required('Designation is required'),
+  expertiseFields: Yup.string().required('Expertise fields is required'),
   mobileNo: Yup.string()
     .matches(/^\d{11}$/, 'Mobile number must be exactly 11 digits')
     .required('Mobile number is required'),
@@ -291,6 +292,32 @@ const Page = () => {
             />
             {errors.permanentAddress && (
               <p className='text-red-900'>{errors.permanentAddress.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor='presentAddress' className={TailwindStyles.label}>
+              Expertise Fields:<span className='text-red-500'>*</span>
+            </label>
+            <Controller
+              name='expertiseFields'
+              control={control}
+              defaultValue=''
+              render={({ field }) => (
+                <textarea
+                  className={TailwindStyles.input}
+                  {...field}
+                  placeholder='Enter your expertise fields'
+                  rows={4}
+                  cols={50}
+                />
+              )}
+            />
+            <p className='mt-1 mb-2 text-xs text-purple-600'>
+              Please enter your expertise with comma separated if more than one.
+            </p>
+            {errors.expertiseFields && (
+              <p className='text-red-900'>{errors.expertiseFields.message}</p>
             )}
           </div>
 

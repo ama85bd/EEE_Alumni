@@ -8,7 +8,6 @@ import { getServerSession } from 'next-auth';
 export default withAuth(
   async function middleware(req: any) {
     const pathname = req.nextUrl.pathname;
-    console.log('pathname', pathname);
     const isAuth = await getToken({ req });
     const isLoginPage = pathname.startsWith('/login');
 
@@ -36,10 +35,7 @@ export default withAuth(
     // if (pathname === '/') {
     //   return NextResponse.redirect(new URL('/adminDashboard', req.url));
     // }
-    console.log(
-      'pathname === req.nextUrl.pathname.startsWith',
-      pathname.startsWith('/admin')
-    );
+
     if (isLoginPage) {
       if (isAuth && !req.nextauth.token?.userType[0]?.admin) {
         return NextResponse.redirect(new URL('/admin', req.url));

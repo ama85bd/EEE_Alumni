@@ -29,6 +29,9 @@ export const createUserSchema = object({
     permanentAddress: string({
       required_error: 'Permanent address is required',
     }),
+    expertiseFields: string({
+      required_error: 'Expertise fields is required',
+    }),
     isAdmin: boolean({
       required_error: 'isActive is required',
     }),
