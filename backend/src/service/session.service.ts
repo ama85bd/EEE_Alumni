@@ -42,7 +42,7 @@ export async function reIssueAccessToken({
   // create an access token
   const accessToken = sighJwt(
     {
-      ...user,
+      id: user._id,
       session: session._id,
     },
     'accessTokenPrivateKey',

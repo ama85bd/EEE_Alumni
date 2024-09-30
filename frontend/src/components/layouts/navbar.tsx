@@ -103,7 +103,7 @@ const Navbar = () => {
                               <div className={styles.nestedItem}>
                                 <Link
                                   href='/admin/user/request'
-                                  className='text-gray-900 dark:text-white hover:underline'
+                                  className='text-gray-900 dark:text-gray-900 hover:underline'
                                   aria-current='page'
                                 >
                                   Request
@@ -112,7 +112,7 @@ const Navbar = () => {
                               <div className={styles.nestedItem}>
                                 <Link
                                   href='/admin/user/active'
-                                  className='text-gray-900 dark:text-white hover:underline'
+                                  className='text-gray-900 dark:text-gray-900 hover:underline'
                                   aria-current='page'
                                 >
                                   Active

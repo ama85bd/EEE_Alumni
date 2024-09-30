@@ -7,12 +7,14 @@ import logger from './utils/logger';
 import connect from './utils/connect';
 import userRoutes from './routes/user';
 import sessionRoutes from './routes/session';
+import { deserializeUser } from './middleware/deserializeUser';
 
 const port = config.get<number>('port');
 const app = express();
 
 app.use(express.json());
-console.log('process.env.CLIENT_URL', process.env.CLIENT_URL);
+
+app.use(deserializeUser);
 
 if (process.env.NODE_ENV === 'development') {
   app.use(
