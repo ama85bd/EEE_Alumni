@@ -69,8 +69,8 @@ const params = {
   }),
 };
 
-export const getUserSchema = object({
+export const getUserIdSchema = object({
   ...params,
 });
 
-export type GetUserInput = TypeOf<typeof getUserSchema>;
+export type GetUserId = TypeOf<typeof getUserIdSchema>;

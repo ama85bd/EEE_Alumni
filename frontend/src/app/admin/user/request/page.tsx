@@ -28,7 +28,6 @@ const UserRequest: FC<pageProps> = ({}) => {
           headers: headersData,
         })
         .then((r) => {
-          console.log('rrrrrr', r.data);
           setInactiveUsers(r.data);
         });
     } catch (error) {
@@ -41,11 +40,21 @@ const UserRequest: FC<pageProps> = ({}) => {
     inActiveUsers();
   }, [session?.accessToken]);
 
-  const data = [
-    { id: 1, name: 'John Doe', age: 28 },
-    { id: 2, name: 'Jane Smith', age: 34 },
-    { id: 3, name: 'Mike Johnson', age: 45 },
-  ];
+  async function onActiveUser(id: string) {
+    console.log('user id', id);
+
+    try {
+      await axios
+        .get(`http://localhost:1337/api/users/${id}`, { headers: headersData })
+        .then((r) => {
+          console.log('rrrrrrr', r);
+          inActiveUsers();
+        });
+    } catch (error) {
+      // notFound();
+      console.log(error);
+    }
+  }
 
   return (
     <div className='flex justify-center'>
@@ -96,7 +105,10 @@ const UserRequest: FC<pageProps> = ({}) => {
                     </button>
                   </Tooltip>
                   <Tooltip text='active'>
-                    <button className='px-2 py-2 text-green-800'>
+                    <button
+                      className='px-2 py-2 text-green-800'
+                      onClick={() => onActiveUser(item._id)}
+                    >
                       <TiTick className=' text-2xl font-bold' />
                     </button>
                   </Tooltip>

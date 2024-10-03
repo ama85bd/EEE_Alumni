@@ -5,8 +5,9 @@ import {
   findInActiveUsers,
   findUser,
   findUserById,
+  updateUserActive,
 } from '../service/user.service';
-import { CreateUserInput, GetUserInput } from '../schema/user.schema';
+import { CreateUserInput, GetUserId } from '../schema/user.schema';
 export async function createUserHandler(
   req: Request<{}, {}, CreateUserInput['body']>,
   res: Response
@@ -33,7 +34,7 @@ export async function createUserHandler(
 }
 
 export async function getUserHandler(
-  req: Request<GetUserInput['params']>,
+  req: Request<GetUserId['params']>,
   res: Response
 ) {
   const _id = req.params.userId;
@@ -49,4 +50,16 @@ export async function getUserHandler(
 export async function getInActiveUsersHandler(req: Request, res: Response) {
   const inActiveUsers = await findInActiveUsers({ isActive: false });
   return res.send(inActiveUsers);
+}
+
+export async function updateActiveUserHandler(
+  req: Request<GetUserId['params']>,
+  res: Response
+) {
+  const _id = req.params.userId;
+  console.log('_id _id', _id);
+  const user = await findUserById({ _id });
+  console.log('user ddd', user);
+  await updateUserActive({ _id: _id }, { isActive: !user.isActive });
+  return res.status(200).json('Ok');
 }
