@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { FC, useEffect, useState } from 'react';
 import { TiTick } from 'react-icons/ti';
 import { RxCross2 } from 'react-icons/rx';
+import { MdDisabledByDefault } from 'react-icons/md';
 
 interface pageProps {}
 
@@ -13,8 +14,6 @@ const UserRequest: FC<pageProps> = ({}) => {
   const { data: session, status }: any = useSession();
   const [visible, setVisible] = useState(false);
   const [inactiveUsers, setInactiveUsers] = useState<IUser[]>([]);
-  console.log('inactiveUsers', inactiveUsers);
-  console.log('session', session?.accessToken);
   const headersData = {
     Authorization: `Bearer ${session?.accessToken}`,
     'x-refresh': `${session?.refreshToken}`,
@@ -41,8 +40,6 @@ const UserRequest: FC<pageProps> = ({}) => {
   }, [session?.accessToken]);
 
   async function onActiveUser(id: string) {
-    console.log('user id', id);
-
     try {
       await axios
         .get(`http://localhost:1337/api/users/${id}`, { headers: headersData })
@@ -101,7 +98,7 @@ const UserRequest: FC<pageProps> = ({}) => {
                 <td className='border border-gray-300 px-4 py-2 text-center'>
                   <Tooltip text='remove'>
                     <button className='px-2 py-2 text-red-800'>
-                      <RxCross2 className=' text-xl font-bold' />
+                      <MdDisabledByDefault className=' text-2xl font-bold' />
                     </button>
                   </Tooltip>
                   <Tooltip text='active'>

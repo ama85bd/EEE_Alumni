@@ -32,7 +32,9 @@ export async function validatePassword({
   return omit(user.toJSON(), 'password');
 }
 
-export async function findInActiveUsers(query: FilterQuery<UserDocument>) {
+export async function findActiveInactiveUsers(
+  query: FilterQuery<UserDocument>
+) {
   const inActiveUsers = UserModel.find(query)
     .select('-password -__v -image -createdAt -updatedAt')
     .lean();

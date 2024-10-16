@@ -2,7 +2,7 @@ import { Response, Request } from 'express';
 import logger from '../utils/logger';
 import {
   createUser,
-  findInActiveUsers,
+  findActiveInactiveUsers,
   findUser,
   findUserById,
   updateUserActive,
@@ -48,8 +48,13 @@ export async function getUserHandler(
 }
 
 export async function getInActiveUsersHandler(req: Request, res: Response) {
-  const inActiveUsers = await findInActiveUsers({ isActive: false });
+  const inActiveUsers = await findActiveInactiveUsers({ isActive: false });
   return res.send(inActiveUsers);
+}
+
+export async function getActiveUsersHandler(req: Request, res: Response) {
+  const activeUsers = await findActiveInactiveUsers({ isActive: true });
+  return res.send(activeUsers);
 }
 
 export async function updateActiveUserHandler(
