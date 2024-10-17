@@ -8,6 +8,8 @@ import TailwindStyles from '@/utils/TailwindCss';
 import { IUser } from '@/models/user';
 import toast from 'react-hot-toast';
 
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
+
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   profession: Yup.string().required('Profession is required'),
@@ -50,14 +52,22 @@ const validationSchema = Yup.object().shape({
     .oneOf([Yup.ref('password'), ''], 'Passwords must match')
     .required('Confirm Password is required'),
   image: Yup.mixed()
-    .required('An image is required')
-    .test('fileSize', 'File size is too large (max: 1MB)', (value: any) => {
-      return value && value[0]?.size <= 1048576; // 1 MB in bytes
+    .required('An image file is required')
+    .test('fileSize', 'The file is too large', function (value: any) {
+      const { createError } = this;
+      return value[0]
+        ? value[0]?.size <= MAX_FILE_SIZE
+        : createError({
+            path: this.path,
+            message: 'An image file is required',
+          });
     })
     .test('fileType', 'Unsupported File Format', (value: any) => {
       return (
-        value &&
-        ['image/jpeg', 'image/png', 'image/gif'].includes(value[0]?.type)
+        value[0] &&
+        ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(
+          value[0].type
+        )
       );
     }),
 });
@@ -404,7 +414,7 @@ const Page = () => {
               render={({ field: { onChange, onBlur, ref } }) => (
                 <input
                   type='file'
-                  accept='image/jpeg, image/png, image/gif'
+                  accept='image/jpeg,image/jpg, image/png, image/gif'
                   onChange={(event) => {
                     onChange(event.target.files);
                     handleImageChange(event);

@@ -8,10 +8,13 @@ import connect from './utils/connect';
 import userRoutes from './routes/user';
 import sessionRoutes from './routes/session';
 import { deserializeUser } from './middleware/deserializeUser';
+import galleryRoutes from './routes/gallery';
+import multer from 'multer';
+import bodyParser from 'body-parser';
 
 const port = config.get<number>('port');
 const app = express();
-
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use(express.json());
 
 app.use(deserializeUser);
@@ -21,7 +24,7 @@ if (process.env.NODE_ENV === 'development') {
     cors({
       origin: [
         `${process.env.CLIENT_URL}`,
-        'http://localhost:3001/',
+        'http://localhost:3000/',
         'http://localhost:1337',
       ],
     })
@@ -36,4 +39,7 @@ app.listen(port, async () => {
 
   // session route
   sessionRoutes(app);
+
+  // gallery route
+  galleryRoutes(app);
 });

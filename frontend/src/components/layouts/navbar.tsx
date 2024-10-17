@@ -121,7 +121,15 @@ const Navbar = () => {
                             </div>
                           )}
                         </div>
-                        <div className={styles.dropdownItem}>Another Item</div>
+                        <div className={styles.dropdownItem}>
+                          <Link
+                            href='/admin/gallery'
+                            className='text-gray-900 dark:text-gray-900 hover:underline'
+                            aria-current='page'
+                          >
+                            Gallery
+                          </Link>
+                        </div>
                       </div>
                     )}
                   </div>
