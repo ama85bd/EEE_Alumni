@@ -1,7 +1,10 @@
 import { Express, Response, Request } from 'express';
 import validate from '../middleware/validateResource';
 import { createGallerySchema } from '../schema/gallery.schema';
-import { createGalleryHandler } from '../controller/gallery.controller';
+import {
+  createGalleryHandler,
+  getAllGalleryHandler,
+} from '../controller/gallery.controller';
 import { requireUser } from '../middleware/requireUser';
 
 function galleryRoutes(app: Express) {
@@ -10,6 +13,7 @@ function galleryRoutes(app: Express) {
     [requireUser, validate(createGallerySchema)],
     createGalleryHandler
   );
+  app.get('/api/gallery', requireUser, getAllGalleryHandler);
 }
 
 export default galleryRoutes;

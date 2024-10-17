@@ -9,3 +9,7 @@ export async function createGallery(input: FilterQuery<GalleryDocument>) {
     throw new Error(error);
   }
 }
+
+export async function findAllGallery() {
+  return GalleryModel.find().lean();
+}

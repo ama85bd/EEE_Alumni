@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { CreateGalleryInput } from '../schema/gallery.schema';
-import { createGallery } from '../service/gallery.service';
+import { createGallery, findAllGallery } from '../service/gallery.service';
 import logger from '../utils/logger';
 
 export async function createGalleryHandler(
@@ -21,4 +21,11 @@ export async function createGalleryHandler(
     console.error(error); // Log the entire error for debugging
     res.status(500).send({ message: 'Server error.' });
   }
+}
+
+export async function getAllGalleryHandler(req: Request, res: Response) {
+  const galleries = await findAllGallery();
+  console.log('galleries', galleries);
+
+  return res.send(galleries);
 }
