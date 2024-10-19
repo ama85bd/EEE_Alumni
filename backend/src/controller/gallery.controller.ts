@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
-import { CreateGalleryInput } from '../schema/gallery.schema';
-import { createGallery, findAllGallery } from '../service/gallery.service';
+import { CreateGalleryInput, GetGalleryId } from '../schema/gallery.schema';
+import {
+  createGallery,
+  deleteOneGallery,
+  findAllGallery,
+} from '../service/gallery.service';
 import logger from '../utils/logger';
 
 export async function createGalleryHandler(
@@ -28,4 +32,18 @@ export async function getAllGalleryHandler(req: Request, res: Response) {
   console.log('galleries', galleries);
 
   return res.send(galleries);
+}
+
+export async function deleteGalleryHandler(
+  req: Request<GetGalleryId['params']>,
+  res: Response
+) {
+  const _id = req.params.galleryId;
+  const gallery = await deleteOneGallery(_id);
+
+  if (!gallery) {
+    return res.sendStatus(404);
+  }
+
+  return res.sendStatus(200);
 }

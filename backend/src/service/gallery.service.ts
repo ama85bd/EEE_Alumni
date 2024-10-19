@@ -13,3 +13,7 @@ export async function createGallery(input: FilterQuery<GalleryDocument>) {
 export async function findAllGallery() {
   return GalleryModel.find().lean();
 }
+
+export async function deleteOneGallery(id: string) {
+  return GalleryModel.deleteOne({ _id: id });
+}

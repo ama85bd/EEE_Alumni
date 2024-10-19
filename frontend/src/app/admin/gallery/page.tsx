@@ -10,18 +10,19 @@ import axios from 'axios';
 import CommonTable from '@/components/table/CommonTable';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Image from 'next/image';
+import Modal from '@/components/Modal';
 
 interface galleryProps {}
-interface User {
-  id: number;
-  name: string;
-  email: string;
+interface IGallery {
+  _id: string;
+  image: string;
+  title: string;
 }
 
-const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
 const validationSchema = Yup.object().shape({
-  title: Yup.string().required('Title is required'),
+  title: Yup.string().required('Caption is required'),
   image: Yup.mixed()
     .required('An image file is required')
     .test('fileSize', 'The file is too large', function (value: any) {
@@ -56,9 +57,66 @@ const Gallery: FC<galleryProps> = ({}) => {
     mode: 'onChange',
     resolver: yupResolver(validationSchema),
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  const [galleryId, setGalleryId] = useState('');
+
+  const { data: session, status }: any = useSession();
+  const [base64, setBase64] = useState('');
+  const [image, setImage] = useState<any>(null);
+  const [galleries, setGalleries] = useState<any[]>([]);
+
+  const headersData = {
+    Authorization: `Bearer ${session?.accessToken}`,
+    'x-refresh': `${session?.refreshToken}`,
+    'Content-Type': 'application/json', // Modify as needed
+  };
+
+  async function getAllGallery() {
+    try {
+      await axios
+        .get(`http://localhost:1337/api/gallery`, {
+          headers: headersData,
+        })
+        .then((r) => {
+          setGalleries(r.data);
+        });
+    } catch (error) {
+      // notFound();
+      console.log(error);
+    }
+  }
+
+  async function onDeleteGallery(id: string) {
+    try {
+      await axios
+        .get(`http://localhost:1337/api/gallery/${id}`, {
+          headers: headersData,
+        })
+        .then((r) => {
+          getAllGallery();
+          toast.success(`Gallery deleted successfully..`);
+        });
+    } catch (error) {
+      // notFound();
+      console.log(error);
+    }
+  }
+
+  const deleteGallery = async () => {
+    await onDeleteGallery(galleryId);
+    closeModal();
+  };
 
   const columns: any = [
-    { Header: 'Title', accessor: 'title' },
+    { Header: 'Caption', accessor: 'title' },
     {
       Header: 'Image',
       accessor: 'image',
@@ -78,28 +136,14 @@ const Gallery: FC<galleryProps> = ({}) => {
   ];
   const actions = [
     {
-      icon: <FaEdit className='text-blue-500' />,
-      label: 'Edit',
-      onClick: (row: User) => console.log('Edit', row),
-    },
-    {
       icon: <FaTrash className='text-red-500' />,
       label: 'Delete',
-      onClick: (row: User) => console.log('Delete', row),
+      onClick: (row: IGallery) => {
+        setGalleryId(row._id);
+        openModal();
+      },
     },
   ];
-
-  const { data: session, status }: any = useSession();
-  const [base64, setBase64] = useState('');
-  const [image, setImage] = useState<any>(null);
-  const [galleries, setGalleries] = useState<any[]>([]);
-  console.log('galleries', galleries);
-
-  const headersData = {
-    Authorization: `Bearer ${session?.accessToken}`,
-    'x-refresh': `${session?.refreshToken}`,
-    'Content-Type': 'application/json', // Modify as needed
-  };
 
   const handleImageChange = (e: any) => {
     const file = e.target.files[0];
@@ -120,21 +164,6 @@ const Gallery: FC<galleryProps> = ({}) => {
       reader.readAsDataURL(file);
     }
   };
-
-  async function getAllGallery() {
-    try {
-      await axios
-        .get(`http://localhost:1337/api/gallery`, {
-          headers: headersData,
-        })
-        .then((r) => {
-          setGalleries(r.data);
-        });
-    } catch (error) {
-      // notFound();
-      console.log(error);
-    }
-  }
 
   useEffect(() => {
     getAllGallery();
@@ -178,11 +207,12 @@ const Gallery: FC<galleryProps> = ({}) => {
         noValidate
       >
         <label htmlFor='image' className='flex items-center cursor-pointer'>
-          Title:<span className='text-red-500'>*</span>
+          Caption:<span className='text-red-500'>*</span>
         </label>
-        <div className=''>
+        <div className='mr-4 !mr-36'>
           <input
             type='text'
+            style={{ width: '150%' }}
             className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-yellow-500 focus:ring-opacity-50 transition'
             {...register('title')}
           />
@@ -193,7 +223,7 @@ const Gallery: FC<galleryProps> = ({}) => {
         <label htmlFor='image' className='flex items-center cursor-pointer'>
           Upload Image: <span className='text-red-500'>*</span>
         </label>
-        <div>
+        <div style={{ width: '15%', marginRight: '3rem' }}>
           <Controller
             name='image'
             control={control}
@@ -226,7 +256,7 @@ const Gallery: FC<galleryProps> = ({}) => {
           <img
             src={image}
             alt='Preview'
-            className='w-24 h-24 border rounded-lg overflow-hidden'
+            className='w-24 h-24 border rounded-lg overflow-hidden ml-2 !ml-20'
           />
         )}
       </form>
@@ -238,6 +268,28 @@ const Gallery: FC<galleryProps> = ({}) => {
         itemsPerPage={10}
         actions={actions}
       />
+
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <div>
+          <div className='flex space-x-2'>
+            <span>Are you sure you want to delete?</span>
+            <button
+              className='bg-red-500 text-white px-2 py-1 rounded'
+              onClick={deleteGallery}
+            >
+              Yes
+            </button>
+            <button
+              className='bg-gray-300 text-black px-2 py-1 rounded'
+              onClick={() => {
+                closeModal();
+              }}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };

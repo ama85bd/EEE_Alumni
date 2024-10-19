@@ -12,3 +12,17 @@ export const createGallerySchema = object({
 });
 
 export type CreateGalleryInput = TypeOf<typeof createGallerySchema>;
+
+const params = {
+  params: object({
+    galleryId: string({
+      required_error: 'galleryId is required',
+    }),
+  }),
+};
+
+export const getGalleryIdSchema = object({
+  ...params,
+});
+
+export type GetGalleryId = TypeOf<typeof getGalleryIdSchema>;

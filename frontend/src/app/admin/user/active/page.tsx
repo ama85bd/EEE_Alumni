@@ -94,13 +94,10 @@ const UserActive: FC<pageProps> = ({}) => {
   }, [session?.accessToken]);
 
   async function onActiveUser(id: string) {
-    console.log('user id', id);
-
     try {
       await axios
         .get(`http://localhost:1337/api/users/${id}`, { headers: headersData })
         .then((r) => {
-          console.log('rrrrrrr', r);
           inActiveUsers();
         });
     } catch (error) {

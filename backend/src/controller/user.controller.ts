@@ -62,9 +62,7 @@ export async function updateActiveUserHandler(
   res: Response
 ) {
   const _id = req.params.userId;
-  console.log('_id _id', _id);
   const user = await findUserById({ _id });
-  console.log('user ddd', user);
   await updateUserActive({ _id: _id }, { isActive: !user.isActive });
   return res.status(200).json('Ok');
 }

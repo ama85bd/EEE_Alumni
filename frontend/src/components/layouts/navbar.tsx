@@ -11,9 +11,11 @@ const Navbar = () => {
   const { data: session, status }: any = useSession();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenMember, setIsOpenMember] = useState(false);
   const [nestedOpen, setNestedOpen] = useState(false);
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
+  const toggleDropdownMember = () => setIsOpenMember((prev) => !prev);
   const toggleNestedDropdown = () => setNestedOpen((prev) => !prev);
 
   return (
@@ -53,11 +55,92 @@ const Navbar = () => {
               </li>
               <li>
                 <Link
-                  href='/notice'
+                  href='/underConstruction'
                   className='text-white dark:text-white hover:underline'
                   aria-current='page'
                 >
-                  Notice
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href='/underConstruction'
+                  className='text-white dark:text-white hover:underline'
+                  aria-current='page'
+                >
+                  Events
+                </Link>
+              </li>
+              <li>
+                <div
+                  className={styles.dropdown}
+                  onMouseLeave={() => setIsOpenMember(false)}
+                >
+                  <button
+                    onMouseEnter={toggleDropdownMember}
+                    className={
+                      'text-white dark:text-white ' + styles.dropdownButton
+                    }
+                  >
+                    Membership
+                    <svg
+                      className='ml-2 h-5 w-5'
+                      xmlns='http://www.w3.org/2000/svg'
+                      viewBox='0 0 20 20'
+                      fill='currentColor'
+                      aria-hidden='true'
+                    >
+                      <path
+                        fillRule='evenodd'
+                        d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
+                        clipRule='evenodd'
+                      />
+                    </svg>
+                  </button>
+                  {isOpenMember && (
+                    <div className={styles.dropdownContent}>
+                      <div
+                        className={styles.dropdownItem}
+                        onMouseEnter={toggleNestedDropdown}
+                        onMouseLeave={() => setNestedOpen(false)}
+                      >
+                        <Link
+                          href='/underConstruction'
+                          className='text-gray-900 dark:text-gray-900 hover:underline'
+                          aria-current='page'
+                        >
+                          Membership Eligibility
+                        </Link>
+                      </div>
+                      <div className={styles.dropdownItem}>
+                        <Link
+                          href='/underConstruction'
+                          className='text-gray-900 dark:text-gray-900 hover:underline'
+                          aria-current='page'
+                        >
+                          Registration Procedure
+                        </Link>
+                      </div>
+                      <div className={styles.dropdownItem}>
+                        <Link
+                          href='/underConstruction'
+                          className='text-gray-900 dark:text-gray-900 hover:underline'
+                          aria-current='page'
+                        >
+                          Apply for Membership
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </li>
+              <li>
+                <Link
+                  href='/underConstruction'
+                  className='text-white dark:text-white hover:underline'
+                  aria-current='page'
+                >
+                  Contact
                 </Link>
               </li>
               {session?.userType[0].admin && (
@@ -128,6 +211,15 @@ const Navbar = () => {
                             aria-current='page'
                           >
                             Gallery
+                          </Link>
+                        </div>
+                        <div className={styles.dropdownItem}>
+                          <Link
+                            href='/underConstruction'
+                            className='text-gray-900 dark:text-gray-900 hover:underline'
+                            aria-current='page'
+                          >
+                            Notice
                           </Link>
                         </div>
                       </div>
