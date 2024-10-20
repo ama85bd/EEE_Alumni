@@ -10,7 +10,7 @@ export interface IUser {
   presentAddress: string;
   permanentAddress: string;
   password: string;
-  image: any;
+  image: string;
   isAdmin?: boolean;
   isActive?: boolean;
   isMember?: boolean;

@@ -201,65 +201,84 @@ const Gallery: FC<galleryProps> = ({}) => {
 
   return (
     <>
-      <form
-        className='flex justify-center items-center space-x-4 mb-5'
-        onSubmit={handleSubmit(handleFormSubmit)}
-        noValidate
-      >
-        <label htmlFor='image' className='flex items-center cursor-pointer'>
-          Caption:<span className='text-red-500'>*</span>
-        </label>
-        <div className='mr-4 !mr-36'>
-          <input
-            type='text'
-            style={{ width: '150%' }}
-            className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-yellow-500 focus:ring-opacity-50 transition'
-            {...register('title')}
-          />
-          {errors.title && (
-            <p className='text-red-500 text-sm'>{errors.title.message}</p>
-          )}
-        </div>
-        <label htmlFor='image' className='flex items-center cursor-pointer'>
-          Upload Image: <span className='text-red-500'>*</span>
-        </label>
-        <div style={{ width: '15%', marginRight: '3rem' }}>
-          <Controller
-            name='image'
-            control={control}
-            defaultValue={''}
-            render={({ field: { onChange, onBlur, ref } }) => (
-              <input
-                type='file'
-                accept='image/jpeg,image/jpg, image/png, image/gif'
-                onChange={(event) => {
-                  onChange(event.target.files);
-                  handleImageChange(event);
+      <div className='flex w-full justify-center items-center  dark:bg-gray-100 '>
+        <form
+          onSubmit={handleSubmit(handleFormSubmit)}
+          noValidate
+          className='w-full bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4 border border-gray-300'
+        >
+          <label htmlFor='image' className='flex items-center cursor-pointer'>
+            Caption:<span className='text-red-500'>*</span>
+          </label>
+          <div className=''>
+            <input
+              type='text'
+              className='bg-gray-50 border mb-2 border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-yellow-500 focus:ring-opacity-50 transition'
+              {...register('title')}
+            />
+            {errors.title && (
+              <p className='text-red-500 text-sm'>{errors.title.message}</p>
+            )}
+          </div>
+
+          <div className='flex'>
+            <div>
+              <label
+                htmlFor='image'
+                className='flex items-center cursor-pointer'
+              >
+                Upload Image: <span className='text-red-500'>*</span>
+              </label>
+              <div
+                style={{
+                  width: '15%',
+                  marginRight: '3rem',
+                  marginBottom: '0.5rem',
                 }}
-                onBlur={onBlur}
-                ref={ref}
+              >
+                <Controller
+                  name='image'
+                  control={control}
+                  defaultValue={''}
+                  render={({ field: { onChange, onBlur, ref } }) => (
+                    <input
+                      type='file'
+                      accept='image/jpeg,image/jpg, image/png, image/gif'
+                      onChange={(event) => {
+                        onChange(event.target.files);
+                        handleImageChange(event);
+                      }}
+                      onBlur={onBlur}
+                      ref={ref}
+                    />
+                  )}
+                />
+                {errors.image && (
+                  <p className='text-red-500 text-sm'>{errors.image.message}</p>
+                )}
+              </div>
+
+              <button
+                type='submit'
+                className='text-white bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5  dark:bg-teal-600 dark:hover:bg-teal-700 focus:outline-none dark:focus:ring-teal-800'
+              >
+                Submit
+              </button>
+            </div>
+            {image && (
+              <img
+                src={image}
+                alt='Preview'
+                className='w-64 h-24 border rounded-lg overflow-hidden'
+                // style={{
+                //   top: '-5rem',
+                //   left: '67rem',
+                // }}
               />
             )}
-          />
-          {errors.image && (
-            <p className='text-red-500 text-sm'>{errors.image.message}</p>
-          )}
-        </div>
-
-        <button
-          type='submit'
-          className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'
-        >
-          Submit
-        </button>
-        {image && (
-          <img
-            src={image}
-            alt='Preview'
-            className='w-24 h-24 border rounded-lg overflow-hidden ml-2 !ml-20'
-          />
-        )}
-      </form>
+          </div>
+        </form>
+      </div>
 
       <CommonTable
         tableHeader={'Gallery Images'}

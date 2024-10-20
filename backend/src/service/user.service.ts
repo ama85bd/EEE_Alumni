@@ -49,7 +49,6 @@ export async function findUserById(
   query: FilterQuery<UserDocument>,
   options: QueryOptions = { lean: true }
 ) {
-  console.log('query.id', query._id);
   const userId = { _id: ObjectId.createFromHexString(query._id) };
   const user = await UserModel.findOne(userId, {}, options);
   return omit(user, 'password', 'image');
@@ -60,4 +59,8 @@ export async function updateUserActive(
   update: UpdateQuery<UserDocument>
 ) {
   return UserModel.updateOne(query, update);
+}
+
+export async function deleteOneUser(id: string) {
+  return UserModel.deleteOne({ _id: id });
 }

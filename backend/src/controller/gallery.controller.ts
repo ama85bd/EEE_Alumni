@@ -29,8 +29,6 @@ export async function createGalleryHandler(
 
 export async function getAllGalleryHandler(req: Request, res: Response) {
   const galleries = await findAllGallery();
-  console.log('galleries', galleries);
-
   return res.send(galleries);
 }
 

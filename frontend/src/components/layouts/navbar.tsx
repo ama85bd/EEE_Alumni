@@ -20,7 +20,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className='bg-green-600 dark:bg-gray-700'>
+      <nav className='bg-teal-700 dark:bg-gray-700'>
         <div className='flex flex-wrap items-center justify-between p-4 px-10'>
           <div className='flex items-center'>
             <Link
@@ -215,7 +215,7 @@ const Navbar = () => {
                         </div>
                         <div className={styles.dropdownItem}>
                           <Link
-                            href='/underConstruction'
+                            href='/admin/notice'
                             className='text-gray-900 dark:text-gray-900 hover:underline'
                             aria-current='page'
                           >

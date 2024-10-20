@@ -3,6 +3,7 @@ import validate from '../middleware/validateResource';
 import { createUserSchema, getUserIdSchema } from '../schema/user.schema';
 import {
   createUserHandler,
+  deleteUserHandler,
   getActiveUsersHandler,
   getInActiveUsersHandler,
   updateActiveUserHandler,
@@ -18,6 +19,11 @@ function userRoutes(app: Express) {
     '/api/users/:userId',
     [requireUser, validate(getUserIdSchema)],
     updateActiveUserHandler
+  );
+  app.delete(
+    '/api/users/:userId',
+    [requireUser, validate(getUserIdSchema)],
+    deleteUserHandler
   );
 }
 

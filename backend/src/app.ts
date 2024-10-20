@@ -9,8 +9,8 @@ import userRoutes from './routes/user';
 import sessionRoutes from './routes/session';
 import { deserializeUser } from './middleware/deserializeUser';
 import galleryRoutes from './routes/gallery';
-import multer from 'multer';
 import bodyParser from 'body-parser';
+import noticeRoutes from './routes/notice';
 
 const port = config.get<number>('port');
 const app = express();
@@ -42,4 +42,7 @@ app.listen(port, async () => {
 
   // gallery route
   galleryRoutes(app);
+
+  // notice route
+  noticeRoutes(app);
 });

@@ -78,7 +78,7 @@ const HomeComponent: FC<HomeProps> = ({}) => {
               height={400}
               className='w-full h-full object-cover md:rounded-3xl block bg-gray-800 opacity-90'
             />
-            <div className='absolute xl:bottom-0 2xl:bottom-14 md:rounded-b-3xl bg-black bg-opacity-40 xl:inset-x-[5.1%] 2xl:inset-x-[3.4%] py-2 text-center text-5xl font-bold text-yellow-200 animate-none md:block opacity-100'>
+            <div className='absolute xl:bottom-0 2xl:bottom-14 md:rounded-b-3xl  bg-opacity-40 xl:inset-x-[5.1%] 2xl:inset-x-[3.4%] py-2 text-center text-5xl font-bold text-teal-300 animate-none md:block opacity-100'>
               <AnimatedSentence text={elem?.title} />
             </div>
           </div>
